@@ -51,10 +51,17 @@ const getPreviewKey = (doc: vscode.TextDocument): string => doc.uri.path;
 
 const getMediaPath = (context: vscode.ExtensionContext) => vscode.Uri
     .file(context.extensionPath)
-    .with({ scheme: "resource"})
+    .with({ scheme: "resource" })
     .toString() + '/';
 
-const initPreviewPanel = (document: vscode.TextDocument) => {
+const getStylesPath = (context: vscode.ExtensionContext, panel: vscode.WebviewPanel) => {
+  const fileUri = vscode.Uri.file(join(context.extensionPath, 'preview', 'style.css'));
+  const webviewUri = panel.webview.asWebviewUri(fileUri);
+
+  return `${webviewUri}`;
+}
+
+const initPreviewPanel = (document: vscode.TextDocument, context: vscode.ExtensionContext) => {
     const key = getPreviewKey(document);
     const fileName = basename(document.fileName);
 
@@ -63,7 +70,11 @@ const initPreviewPanel = (document: vscode.TextDocument) => {
         `Preview: ${fileName}`,
         vscode.ViewColumn.Beside,
         {
-            enableScripts: true
+          enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.file(context.extensionPath),
+            vscode.Uri.file(join(context.extensionPath, 'preview'))
+          ]
         }
     );
 
@@ -87,14 +98,17 @@ const updateContent = (doc: vscode.TextDocument, context: vscode.ExtensionContex
             const data = JSON.parse(json);
             const html = template.apply(data);
 
-
             panel.webview.html = previewHtml 
-                .replace(/{{\s+(\w+)\s+}}/g, (str, key) => {
+                // FIX: Старое рег. выражение - {{\s+(\w+)\s+}}. С ним обязательно нужно было поставить хотя бы один пробел до и после слова "content".
+                .replace(/{{\s?(\w+)\s?}}/g, (str, key) => {
                     switch (key) {
                         case 'content':
-                            return html;
+                          return html;
                         case 'mediaPath':
-                            return getMediaPath(context);
+                          return getMediaPath(context);
+                        // FIX: Путь до стилей подставляется здесь и в виде WebviewUri, т.к. иначе WebView отказывался грузить файл
+                        case 'stylesPath':
+                          return getStylesPath(context, panel);
                         default:
                             return str;
                     }
@@ -114,7 +128,7 @@ const openPreview = (context: vscode.ExtensionContext) => {
 
         if (panel) panel.reveal();
         else {
-            const panel = initPreviewPanel(document);
+            const panel = initPreviewPanel(document, context);
             updateContent(document, context);
             context.subscriptions.push(panel);
         }

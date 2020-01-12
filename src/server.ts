@@ -23,7 +23,8 @@ let conf: ExampleConfiguration | undefined = undefined;
 conn.onInitialize((params: InitializeParams) => {
     return {
         capabilities: {
-            textDocumentSync: 'always'
+          // FIX: VS Code подсветил ошибку, посмотрел пример использования в доке, сделал как там.
+          textDocumentSync: docs.syncKind
         }
     };
 });

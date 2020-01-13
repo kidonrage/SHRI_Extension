@@ -1,16 +1,82 @@
-div {
+.body___structure {
+  min-width: 320px;
+}
+
+.body___structure div {
     border: 2px solid rgba(130, 130, 130, 0.6);
     border-radius: 4px;
     margin: 2px 0;
-    padding: 12px 2px 0 36px;
+    padding: 6px 2px 0 36px;
     position: relative;
 }
 
-div::before {
+.body___structure div::before {
     display: block;
     content: attr(class);
-    position: absolute;
-    top: 1px;
-    left: 36px;
     font-size: 8px;
+    white-space: pre-wrap;
+}
+
+div.preview-types {
+  border: none;
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  padding: 0;
+}
+
+.preview-types:hover {
+  opacity: 1;
+}
+
+.body___structure .preview-types::before,
+.body___structure .preview-types div::before{
+  content: none;
+  display: none;
+}
+
+.body___structure  .preview-types div {
+  padding: 0;
+  border: none;
+}
+
+.preview-types-button {
+  width: 100%;
+}
+
+.preview-types-button label {
+  border: 1px solid var(--vscode-editor-foreground);
+  border-right: none;
+  display: block;
+  padding: 5px 10px;
+  color: var(--vscode-editor-foreground);
+  background-color: var(--vscode-editor-background);
+  cursor: pointer;
+  max-width: 100%;
+  text-align: center;
+}
+
+.preview-types-button:first-child label {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.preview-types-button:last-child label {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-right: 1px solid var(--vscode-editor-foreground);
+}
+
+.preview-types-button input {
+  display: none
+}
+
+.preview-types-button input:checked + label {
+  color: var(--vscode-editor-background);
+  background-color: var(--vscode-editor-foreground);
 }

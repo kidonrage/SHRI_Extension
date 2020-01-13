@@ -61,6 +61,13 @@ const getStylesPath = (context: vscode.ExtensionContext, panel: vscode.WebviewPa
   return `${webviewUri}`;
 }
 
+const getScriptsPath = (context: vscode.ExtensionContext, panel: vscode.WebviewPanel) => {
+  const fileUri = vscode.Uri.file(join(context.extensionPath, 'preview', 'script.js'));
+  const webviewUri = panel.webview.asWebviewUri(fileUri);
+
+  return `${webviewUri}`;
+}
+
 const initPreviewPanel = (document: vscode.TextDocument, context: vscode.ExtensionContext) => {
     const key = getPreviewKey(document);
     const fileName = basename(document.fileName);
@@ -109,6 +116,8 @@ const updateContent = (doc: vscode.TextDocument, context: vscode.ExtensionContex
                         // FIX: Путь до стилей подставляется здесь и в виде WebviewUri, т.к. иначе WebView отказывался грузить файл
                         case 'stylesPath':
                           return getStylesPath(context, panel);
+                        case 'scriptsPath':
+                          return getScriptsPath(context, panel)
                         default:
                             return str;
                     }

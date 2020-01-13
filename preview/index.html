@@ -8,5 +8,21 @@
     </head>
     <body>
         {{content}}
+        <div class="preview-types">
+          <div class="preview-types-button">
+            <input type="radio" name="preview-type" value="structure" id="structure" checked/>
+            <label for="structure">
+                Структура
+            </label>
+          </div>
+        
+          <div class="preview-types-button">
+            <input type="radio" name="preview-type" value="page" id="page" />
+            <label for="page">
+                Интерфейс
+            </label>
+          </div>
+        </div>
+        <script src="{{scriptsPath}}"></script>
     </body>
 </html>

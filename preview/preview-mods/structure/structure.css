@@ -1,0 +1,14 @@
+div {
+  border: 2px solid rgba(130, 130, 130, 0.6);
+  border-radius: 4px;
+  margin: 2px 0;
+  padding: 6px 2px 0 36px;
+  position: relative;
+}
+
+div::before {
+  display: block;
+  content: attr(class);
+  font-size: 8px;
+  white-space: pre-wrap;
+}

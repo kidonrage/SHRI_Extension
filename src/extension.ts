@@ -54,15 +54,8 @@ const getMediaPath = (context: vscode.ExtensionContext) => vscode.Uri
     .with({ scheme: "resource" })
     .toString() + '/';
 
-const getStylesPath = (context: vscode.ExtensionContext, panel: vscode.WebviewPanel) => {
-  const fileUri = vscode.Uri.file(join(context.extensionPath, 'preview', 'style.css'));
-  const webviewUri = panel.webview.asWebviewUri(fileUri);
-
-  return `${webviewUri}`;
-}
-
-const getScriptsPath = (context: vscode.ExtensionContext, panel: vscode.WebviewPanel) => {
-  const fileUri = vscode.Uri.file(join(context.extensionPath, 'preview', 'script.js'));
+const getPathForFileInPreviewCatalogue = (fileName: string, context: vscode.ExtensionContext, panel: vscode.WebviewPanel) => {
+  const fileUri = vscode.Uri.file(join(context.extensionPath, 'preview', fileName));
   const webviewUri = panel.webview.asWebviewUri(fileUri);
 
   return `${webviewUri}`;
@@ -85,6 +78,20 @@ const initPreviewPanel = (document: vscode.TextDocument, context: vscode.Extensi
         }
     );
 
+    panel.webview.onDidReceiveMessage(
+      message => {
+        context.workspaceState.update('previewMode', message.newMode);
+        
+        switch (message.command) {
+          case 'changePreviewMode':
+            updateContent(document, context);
+            return;
+        }
+      },
+      undefined,
+      context.subscriptions
+    );
+
     PANELS[key] = panel;
 
     const e = panel.onDidDispose(() => 
@@ -100,31 +107,59 @@ const updateContent = (doc: vscode.TextDocument, context: vscode.ExtensionContex
     const panel = PANELS[doc.uri.path];
 
     if (panel) {
-        try {
-            const json = doc.getText();
-            const data = JSON.parse(json);
-            const html = template.apply(data);
+      const newMode = context.workspaceState.get('previewMode') as string || 'structure';
 
-            panel.webview.html = previewHtml 
-                // FIX: Старое рег. выражение - {{\s+(\w+)\s+}}. С ним обязательно нужно было поставить хотя бы один пробел до и после слова "content".
-                .replace(/{{\s?(\w+)\s?}}/g, (str, key) => {
-                    switch (key) {
-                        case 'content':
-                          return html;
-                        case 'mediaPath':
-                          return getMediaPath(context);
-                        // FIX: Путь до стилей подставляется здесь и в виде WebviewUri, т.к. иначе WebView отказывался грузить файл
-                        case 'stylesPath':
-                          return getStylesPath(context, panel);
-                        case 'scriptsPath':
-                          return getScriptsPath(context, panel)
-                        default:
-                            return str;
-                    }
-                });
+      try {
+        const json = doc.getText();
+        const data = JSON.parse(json);
+        const html = template.apply(data);
+
+        panel.webview.html = previewHtml 
+          // FIX: Старое рег. выражение - {{\s+(\w+)\s+}}. С ним обязательно нужно было поставить хотя бы один пробел до и после слова "content".
+          .replace(/{{\s?(\w+)\s?}}/g, (str, key) => {
+              switch (key) {
+                  case 'content':
+                    return html;
+                  case 'mediaPath':
+                    return getMediaPath(context);
+                  // FIX: Путь до стилей подставляется здесь и в виде WebviewUri, т.к. иначе WebView отказывался грузить файл
+                  case 'commonStylesPath':
+                    return getPathForFileInPreviewCatalogue('style.css', context, panel);
+                  case 'commonScriptsPath':
+                    return getPathForFileInPreviewCatalogue('script.js', context, panel)
+                  case 'previewModeStylesPath':
+                    return getPathForFileInPreviewCatalogue(join('preview-mods', newMode, `${newMode}.css`), context, panel);
+                  case 'previewModeScriptsPath':
+                    return getPathForFileInPreviewCatalogue(join('preview-mods', newMode, `${newMode}.js`), context, panel);
+                  case 'previewModeClass':
+                    return newMode;
+                  default:
+                      return str;
+              }
+          });
         } catch(e) {}
     }
 };
+
+// const getModeStylesPath = (newPreviewMode: string) => {
+//   let newPreviewStylesPath = '';
+
+//   const getModeStylesPath = (filename: string) => getPathForFileInPreviewCatalogue(join('preview-mods', filename), context, panel)
+
+//   switch (newPreviewMode) {
+//     case 'structure':
+//       newPreviewStylesPath = getModeStylesPath('structure.css');
+//       break;
+//     case 'page':
+//       newPreviewStylesPath = getModeStylesPath('page.css');
+//       break;
+//   }
+
+//   if (panel) {
+//     panel.webview.html = previewHtml 
+//       .replace("{{previewModeStylesPath}}", newPreviewStylesPath)
+//   }
+// };
 
 const openPreview = (context: vscode.ExtensionContext) => {
     const editor = vscode.window.activeTextEditor;

@@ -4,25 +4,22 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <base href="{{mediaPath}}">
-        <link rel="stylesheet" href="{{stylesPath}}" />
+        <link rel="stylesheet" href="{{commonStylesPath}}" />
+        <link rel="stylesheet" href="{{previewModeStylesPath}}" />
     </head>
     <body>
-        {{content}}
-        <div class="preview-types">
-          <div class="preview-types-button">
-            <input type="radio" name="preview-type" value="structure" id="structure" checked/>
-            <label for="structure">
-                Структура
-            </label>
-          </div>
-        
-          <div class="preview-types-button">
-            <input type="radio" name="preview-type" value="page" id="page" />
-            <label for="page">
-                Интерфейс
-            </label>
-          </div>
+        <div id="preview-content">
+          {{content}}
         </div>
-        <script src="{{scriptsPath}}"></script>
+        <div id="preview-mode-switcher" class="{{previewModeClass}}">
+          <button class="preview-types-button" mode-data="structure">
+            Структура
+          </button>
+          <button class="preview-types-button" mode-data="page">
+            Интерфейс
+          </button>
+        </div>
+        <script src="{{commonScriptsPath}}"></script>
+        <script src="{{previewModeScriptsPath}}"></script>
     </body>
 </html>

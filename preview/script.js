@@ -1,41 +1,54 @@
-let previewModes = [];
+const vscode = acquireVsCodeApi();
 
-const getBodyClass = (mode) => 'body___' + mode;
+const previewContent = document.body.querySelector('#preview-content');
 
 function togglePreviewMode(newMode) {
-  const modeClasses = previewModes.map(mode => {
-    return getBodyClass(mode)
-  });
+  vscode.setState({ previewMode: newMode });
 
-  modeClasses.forEach(modeClass => document.body.classList.remove(modeClass));
-
-  document.body.classList.add(getBodyClass(newMode));
+  vscode.postMessage({
+    command: 'changePreviewMode',
+    newMode
+  })
 }
+
+const modeSwitchPanel = document.querySelector("#preview-mode-switcher");
+
+modeSwitchPanel.addEventListener('click', function(e) {
+  const target = e.target;
+  
+  const modeData = target.attributes['mode-data'];
+
+  if (!modeData) {
+    return;
+  }
+
+  togglePreviewMode(modeData.value);
+});
 
 let selectedButton;
 
-const radioButtons = document.querySelectorAll('input[name="preview-type"]');
+const modeSwitchButtons = document.querySelectorAll('button.preview-types-button');
 
-radioButtons.forEach(radioButton => {
-  const modeName = radioButton.value;
+modeSwitchButtons.forEach(button => {
+  const modeName = button.attributes["mode-data"];
 
   if (!modeName) {
     return;
   }
 
-  if (radioButton.checked) {
-    selectedButton = radioButton;
+  if (modeSwitchPanel.classList.contains(modeName.value)) {
+    selectedButton = button;
   }
+});
 
-  previewModes.push(modeName)
 
-  radioButton.addEventListener('change', function() {
-    togglePreviewMode(modeName);
-  });
-})
+const previousState = vscode.getState();
+
 
 if (selectedButton) {
-  const activePreviewType = selectedButton.value;
+  selectedButton.classList.add("active");
+
+  const activePreviewType = selectedButton.attributes["mode-data"].value;
 
   togglePreviewMode(activePreviewType);
 }

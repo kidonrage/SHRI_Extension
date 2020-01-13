@@ -1,23 +1,20 @@
-.body___structure {
+#preview-content {
   min-width: 320px;
 }
 
-.body___structure div {
-    border: 2px solid rgba(130, 130, 130, 0.6);
-    border-radius: 4px;
-    margin: 2px 0;
-    padding: 6px 2px 0 36px;
-    position: relative;
+#preview-mode-switcher,
+#preview-mode-switcher::after,
+#preview-mode-switcher::before,
+#preview-mode-switcher *,
+#preview-mode-switcher *::after,
+#preview-mode-switcher *::before {
+  all: initial;
+  font-family: var(--vscode-editor-font-family);
+  font-size: 14px;
 }
 
-.body___structure div::before {
-    display: block;
-    content: attr(class);
-    font-size: 8px;
-    white-space: pre-wrap;
-}
-
-div.preview-types {
+#preview-mode-switcher {
+  all: initial;
   border: none;
   position: fixed;
   bottom: 5px;
@@ -28,31 +25,18 @@ div.preview-types {
   justify-content: center;
   opacity: 0.5;
   padding: 0;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.preview-types:hover {
+#preview-mode-switcher:hover {
   opacity: 1;
 }
 
-.body___structure .preview-types::before,
-.body___structure .preview-types div::before{
-  content: none;
-  display: none;
-}
-
-.body___structure  .preview-types div {
-  padding: 0;
-  border: none;
-}
-
-.preview-types-button {
-  width: 100%;
-}
-
-.preview-types-button label {
+#preview-mode-switcher .preview-types-button {
+  display: block;
   border: 1px solid var(--vscode-editor-foreground);
   border-right: none;
-  display: block;
   padding: 5px 10px;
   color: var(--vscode-editor-foreground);
   background-color: var(--vscode-editor-background);
@@ -61,22 +45,18 @@ div.preview-types {
   text-align: center;
 }
 
-.preview-types-button:first-child label {
+#preview-mode-switcher .preview-types-button:first-child {
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
 
-.preview-types-button:last-child label {
+#preview-mode-switcher .preview-types-button:last-child {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   border-right: 1px solid var(--vscode-editor-foreground);
 }
 
-.preview-types-button input {
-  display: none
-}
-
-.preview-types-button input:checked + label {
+#preview-mode-switcher .preview-types-button.active {
   color: var(--vscode-editor-background);
   background-color: var(--vscode-editor-foreground);
 }

@@ -11,22 +11,24 @@ import {
 
 import { basename } from 'path';
 
+import * as fs from 'fs';
 import * as jsonToAst from "json-to-ast";
 
 import { ExampleConfiguration, Severity, RuleKeys } from './configuration';
 import { makeLint, LinterProblem } from './linter';
 
+
 let conn = createConnection(ProposedFeatures.all);
 let docs = new TextDocuments();
 let conf: ExampleConfiguration | undefined = undefined;
 
-conn.onInitialize((params: InitializeParams) => {
-    return {
-        capabilities: {
-          // FIX: VS Code подсветил ошибку, посмотрел пример использования в доке, сделал как там.
-          textDocumentSync: docs.syncKind
-        }
-    };
+conn.onInitialize((params: InitializeParams) => {  
+  return {
+    capabilities: {
+      // FIX: VS Code подсветил ошибку, посмотрел пример использования в доке, сделал как там.
+      textDocumentSync: docs.syncKind
+    }
+  };
 });
 
 function GetSeverity(key: RuleKeys): DiagnosticSeverity | undefined {
@@ -64,17 +66,17 @@ function GetMessage(key: RuleKeys): string {
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     const source = basename(textDocument.uri);
-    const json = textDocument.uri;
+    // FIX: заменил textDocument.uri на textDocument.getText(), чтобы валидировать контент, а не путь к файлу
+    const json = textDocument.getText();
 
     const validateObject = (
         obj: jsonToAst.AstObject
-    ): LinterProblem<RuleKeys>[] =>
-        obj.children.some(p => p.key.value === 'block')
+    ): LinterProblem<RuleKeys>[] => obj.children.some(p => p.key.value === 'block')
             ? []
             : [{ key: RuleKeys.BlockNameIsRequired, loc: obj.loc }];
 
     const validateProperty = (
-        property: jsonToAst.AstProperty
+      property: jsonToAst.AstProperty
     ): LinterProblem<RuleKeys>[] =>
         /^[A-Z]+$/.test(property.key.value)
             ? [
@@ -120,7 +122,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     );
 
     if (diagnostics.length) {
-        conn.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+      conn.sendDiagnostics({ uri: textDocument.uri, diagnostics });
     }
 }
 

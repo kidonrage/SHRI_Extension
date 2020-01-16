@@ -9,15 +9,14 @@ import {
     DidChangeConfigurationParams
 } from 'vscode-languageserver';
 
-import { join, resolve, basename } from "path";
+import { basename } from "path";
 
-import * as fs from 'fs';
 import * as jsonToAst from "json-to-ast";
 
 import { ExampleConfiguration, Severity, RuleKeys } from './configuration';
 import { makeLint, LinterProblem } from './linter';
 
-import getBlocksErrors from './blocksLinter';
+import getBlocksDiagnostics from './blocksLinter';
 
 let conn = createConnection(ProposedFeatures.all);
 let docs = new TextDocuments();
@@ -32,7 +31,7 @@ conn.onInitialize((params: InitializeParams) => {
   };
 });
 
-function GetSeverity(key: RuleKeys): DiagnosticSeverity | undefined {
+export function GetSeverity(key: RuleKeys): DiagnosticSeverity | undefined {
     if (!conf || !conf.severity) {
         return undefined;
     }
@@ -41,7 +40,7 @@ function GetSeverity(key: RuleKeys): DiagnosticSeverity | undefined {
 
     switch (severity) {
         case Severity.Error:
-            return DiagnosticSeverity.Information;
+            return DiagnosticSeverity.Error;
         case Severity.Warning:
             return DiagnosticSeverity.Warning;
         case Severity.Information:
@@ -122,7 +121,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
         []
     );
 
-    diagnostics.push(...getBlocksErrors(json, source, textDocument));
+    diagnostics.push(...getBlocksDiagnostics(json, source, textDocument));
 
     console.log('diagnostics', diagnostics);
 

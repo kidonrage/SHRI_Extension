@@ -47,7 +47,103 @@
 					],
 					"default": "Warning",
 					"description": "The 'blockNameIsRequired' rule severity."
-				}
+        },
+        "example.severity.textSeveralH1": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'TEXT.SEVERAL_H1' rule severity."
+        },
+        "example.severity.textInvalidH2Position": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'TEXT.INVALID_H2_POSITION' rule severity."
+        },
+        "example.severity.textInvalidH3Position": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'TEXT.INVALID_H3_POSITION' rule severity."
+        },
+        "example.severity.warningTextSizesShouldBeEqual": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'WARNING.TEXT_SIZES_SHOULD_BE_EQUAL' rule severity."
+        },
+        "example.severity.warningInvalidButtonSize": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'WARNING.INVALID_BUTTON_SIZE' rule severity."
+        },
+        "example.severity.warningInvalidButtonPosition": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'WARNING.INVALID_BUTTON_POSITION' rule severity."
+        },
+        "example.severity.warningInvalidPlaceholderSize": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'WARNING.INVALID_PLACEHOLDER_SIZE' rule severity."
+        },
+        "example.severity.gridTooMuchMarketingBlocks": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'GRID.TOO_MUCH_MARKETING_BLOCKS' rule severity."
+        }
 			}
 		},
 		"commands": [

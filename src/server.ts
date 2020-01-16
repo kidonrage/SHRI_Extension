@@ -9,7 +9,7 @@ import {
     DidChangeConfigurationParams
 } from 'vscode-languageserver';
 
-import { basename } from 'path';
+import { join, resolve, basename } from "path";
 
 import * as fs from 'fs';
 import * as jsonToAst from "json-to-ast";
@@ -17,6 +17,7 @@ import * as jsonToAst from "json-to-ast";
 import { ExampleConfiguration, Severity, RuleKeys } from './configuration';
 import { makeLint, LinterProblem } from './linter';
 
+import getBlocksErrors from './blocksLinter';
 
 let conn = createConnection(ProposedFeatures.all);
 let docs = new TextDocuments();
@@ -120,6 +121,10 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
         },
         []
     );
+
+    diagnostics.push(...getBlocksErrors(json, source, textDocument));
+
+    console.log('diagnostics', diagnostics);
 
     if (diagnostics.length) {
       conn.sendDiagnostics({ uri: textDocument.uri, diagnostics });

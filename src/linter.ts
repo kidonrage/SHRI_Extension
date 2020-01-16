@@ -20,42 +20,30 @@ export function makeLint<TProblemKey>(
     ) {
         switch (node.type) {
             case 'Array':
-              node.children.forEach((item: jsonToAst.AstJsonEntity) => {
-                  walk(item, cbProp, cbObj);
-              });
-              break;
+                node.children.forEach((item: jsonToAst.AstJsonEntity) => {
+                    walk(item, cbProp, cbObj);
+                });
+                break;
             case 'Object':
-              cbObj(node);
-  
-              node.children.forEach((property: jsonToAst.AstProperty) => {
-                  cbProp(property);
-                  walk(property.value, cbProp, cbObj);
-              });
-              break;
-            default:
-              break;
+                cbObj(node);
+    
+                node.children.forEach((property: jsonToAst.AstProperty) => {
+                    cbProp(property);
+                    walk(property.value, cbProp, cbObj);
+                });
+                break;
         }
     }
 
     function parseJson(json: string):JsonAST  {return jsonToAst(json); }
 
-    let errors: LinterProblem<TProblemKey>[] = [];
+    const errors: LinterProblem<TProblemKey>[] = [];
     const ast: JsonAST = parseJson(json);
 
     if (ast) {
-      walk(
-        ast, 
-        (property: jsonToAst.AstProperty) => {
-          // FIX: errors.concat(...objectErrors) изменено на errors = errors.concat(...objectErrors), потому что concat - не мутирующий метод
-          const propertyErrors = validateProperty(property);
-          errors = errors.concat(...propertyErrors)
-        }, 
-        (obj: jsonToAst.AstObject) => {
-          // FIX: errors.concat(...objectErrors) изменено на errors = errors.concat(...objectErrors), потому что concat - не мутирующий метод
-          const objectErrors = validateObject(obj);
-          errors = errors.concat(...objectErrors);
-        }
-      );
+        walk(ast, 
+            (property: jsonToAst.AstProperty) => errors.concat(...validateProperty(property)), 
+            (obj: jsonToAst.AstObject) => errors.concat(...validateObject(obj)));
     }
 
     return errors;
